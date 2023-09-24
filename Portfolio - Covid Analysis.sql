@@ -1,8 +1,10 @@
+--Showing all data of covid deaths across the globe
 SELECT *
 FROM Covid_Deaths
 WHERE continent is not null
 ORDER BY 3,4
 
+--Showing all data of covid vaccinations across the globe
 SELECT *
 FROM Covid_Vaccinations
 WHERE continent is not null
