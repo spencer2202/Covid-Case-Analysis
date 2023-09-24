@@ -72,12 +72,44 @@ JOIN covid_vaccinations
 ON covid_deaths.location = covid_vaccinations.location
 AND covid_deaths.date = covid_vaccinations.date
 
+
+
 SELECT covid_deaths.location, CAST(covid_deaths.date as date) as date, covid_deaths.population, covid_vaccinations.new_vaccinations
+, SUM(CAST(covid_vaccinations.new_vaccinations as float)) OVER (PARTITION BY covid_deaths.location ORDER BY covid_deaths.location, covid_deaths.date) 
+as RollingPeopleVaccinated
 FROM covid_deaths 
 JOIN covid_vaccinations 
 ON covid_deaths.location = covid_vaccinations.location
 AND covid_deaths.date = covid_vaccinations.date
 ORDER BY 1,2
+
+DROP TABLE if exists PercentPopulationVacc
+CREATE TABLE PercentPopulationVacc
+(
+Location varchar(50),
+Date datetime,
+Population numeric,
+New_vaccinations numeric,
+RollingPeopleVaccinated numeric
+)
+
+INSERT INTO PercentPopulationVacc
+SELECT covid_deaths.location, CAST(covid_deaths.date as date) as date, covid_deaths.population, covid_vaccinations.new_vaccinations
+, SUM(CAST(covid_vaccinations.new_vaccinations as float)) OVER (PARTITION BY covid_deaths.location ORDER BY covid_deaths.location, covid_deaths.date) 
+as RollingPeopleVaccinated
+FROM covid_deaths 
+JOIN covid_vaccinations 
+ON covid_deaths.location = covid_vaccinations.location
+AND covid_deaths.date = covid_vaccinations.date
+ORDER BY 1,2
+
+Select *, (RollingPeopleVaccinated/Population)*100
+From PercentPopulationVacc
+
+
+
+
+
 
 
 Create View TotalCasesTotalDeathsByDate as
@@ -95,4 +127,14 @@ CREATE VIEW USTotalCasesTotalDeathsByPopulation as
 SELECT location, cast(date as date) as date, ISNULL(total_cases,0) as total_cases, CAST(ISNULL(total_deaths,0) as float) as total_deaths, population
 FROM Covid_Deaths
 WHERE location like '%states%'
+--ORDER BY 1,2
+
+CREATE VIEW RollingPeopleVaccinated as
+SELECT covid_deaths.location, CAST(covid_deaths.date as date) as date, covid_deaths.population, covid_vaccinations.new_vaccinations
+, SUM(CAST(covid_vaccinations.new_vaccinations as float)) OVER (PARTITION BY covid_deaths.location ORDER BY covid_deaths.location, covid_deaths.date) 
+as RollingPeopleVaccinated
+FROM covid_deaths 
+JOIN covid_vaccinations 
+ON covid_deaths.location = covid_vaccinations.location
+AND covid_deaths.date = covid_vaccinations.date
 --ORDER BY 1,2
