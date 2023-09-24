@@ -10,15 +10,15 @@ FROM Covid_Vaccinations
 WHERE continent is not null
 ORDER BY 3,4
 
---SELECT location, cast(date as date) as dt, total_cases, total_deaths, cast (population as bigint) as pt
---FROM Covid_Deaths
---ORDER BY 1,2
-
-SELECT location, cast(date as date) as date, total_cases, total_deaths, population
+SELECT location, CAST(date as date) as dt, total_cases, total_deaths, CAST (population as bigint) as pt
 FROM Covid_Deaths
 ORDER BY 1,2
 
-SELECT location, cast(date as date) as date, ISNULL(total_cases,0) as total_cases, ISNULL(cast(total_deaths as float), 0) as total_deaths, population
+SELECT location, CAST(date as date) as date, total_cases, total_deaths, population
+FROM Covid_Deaths
+ORDER BY 1,2
+
+SELECT location, CAST(date as date) as date, ISNULL(total_cases,0) as total_cases, ISNULL(cast(total_deaths as float), 0) as total_deaths, population
 FROM Covid_Deaths
 ORDER BY 1,2
 
