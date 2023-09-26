@@ -1,10 +1,8 @@
---Showing all data of covid deaths across the globe
 SELECT *
 FROM Covid_Deaths
 WHERE continent is not null
 ORDER BY 3,4
 
---Showing all data of covid vaccinations across the globe
 SELECT *
 FROM Covid_Vaccinations
 WHERE continent is not null
@@ -75,7 +73,8 @@ ON covid_deaths.location = covid_vaccinations.location
 AND covid_deaths.date = covid_vaccinations.date
 
 
-
+--Showing COVID deaths and COVID vaccinations by location over time
+  
 SELECT covid_deaths.location, CAST(covid_deaths.date as date) as date, covid_deaths.population, covid_vaccinations.new_vaccinations
 , SUM(CAST(covid_vaccinations.new_vaccinations as float)) OVER (PARTITION BY covid_deaths.location ORDER BY covid_deaths.location, covid_deaths.date) 
 as RollingPeopleVaccinated
@@ -85,6 +84,9 @@ ON covid_deaths.location = covid_vaccinations.location
 AND covid_deaths.date = covid_vaccinations.date
 ORDER BY 1,2
 
+
+--Creating a Temp Table to include rolling people vaccinated
+  
 DROP TABLE if exists PercentPopulationVacc
 CREATE TABLE PercentPopulationVacc
 (
